@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Invoice</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      background: #fff;
+    }
+    h1 {
+      text-align: center;
+      color: #d32f2f;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .btn {
+      background: #d32f2f;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 20px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+    th {
+      background: #d32f2f;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Create Invoice</h1>
+  <label>License Plate</label>
+  <input id="license-search" placeholder="Enter license plate..." />
+
+  <div id="customer-info" style="margin-top: 20px; display: none;">
+    <label>Name</label>
+    <input id="name" disabled />
+    <label>Phone</label>
+    <input id="phone" disabled />
+    <label>Car Make</label>
+    <input id="carMake" disabled />
+    <label>Email</label>
+    <input id="email" disabled />
+  </div>
+
+  <label>Work Description</label>
+  <textarea id="desc"></textarea>
+  <label>Cost ($)</label>
+  <input id="cost" />
+
+  <button class="btn" onclick="addToInvoice()">Add to Invoice</button>
+
+  <table>
+    <thead>
+      <tr><th>Description</th><th>Cost ($)</th></tr>
+    </thead>
+    <tbody id="invoice-body"></tbody>
+  </table>
+
+  <script>
+    const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+    const searchInput = document.getElementById('license-search');
+
+    searchInput.addEventListener('input', () => {
+      const value = searchInput.value.trim().toLowerCase();
+      const match = customers.find(c => c.license.toLowerCase() === value);
+      const info = document.getElementById('customer-info');
+      if (match) {
+        info.style.display = 'block';
+        document.getElementById('name').value = match.name;
+        document.getElementById('phone').value = match.phone;
+        document.getElementById('carMake').value = match.carMake;
+        document.getElementById('email').value = match.email;
+      } else {
+        info.style.display = 'none';
+      }
+    });
+
+    function addToInvoice() {
+      const desc = document.getElementById('desc').value.trim();
+      const cost = document.getElementById('cost').value.trim();
+      if (!desc || !cost) return alert('Fill in both fields.');
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${desc}</td><td>$${parseFloat(cost).toFixed(2)}</td>`;
+      document.getElementById('invoice-body').appendChild(row);
+      document.getElementById('desc').value = '';
+      document.getElementById('cost').value = '';
+    }
+  </script>
+</body>
+</html>
